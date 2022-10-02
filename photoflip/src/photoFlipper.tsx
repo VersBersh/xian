@@ -6,15 +6,17 @@ import './App.css';
 
 function PhotoFlipper()
 {
-    const [imgSrc, setImgSrc] = useState("/api/image/highRes?id=img-0");
+    const [imgSrc, setImgSrc] = useState<string | null>(null);
 
     const isInteracting = useInteraction();
     const [count, setCount] = useState(0);
 
-    const maxImages = 220;
     const imageLoader = useRef<DualImageLoader | null>(null);
     if (imageLoader.current === null)
-        imageLoader.current = new DualImageLoader(maxImages);
+    {
+        imageLoader.current = new DualImageLoader();
+        imageLoader.current.LoadFirstImage().then(setImgSrc);
+    }
 
     useEffect(() =>
     {
@@ -37,7 +39,7 @@ function PhotoFlipper()
 
     return (
         <header className="image-container">
-            <img src={imgSrc} alt="photoKnife" style={imgStyle} />
+            {imgSrc !== null && <img src={imgSrc!} alt="photoKnife" style={imgStyle} />}
         </header>
     );
 }
