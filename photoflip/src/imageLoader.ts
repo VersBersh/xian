@@ -17,8 +17,12 @@ enum Resolution
     Low,
 }
 
-function randInt(max: number) {
-    return Math.floor(Math.random() * max);
+function differentRandInt(max: number, last: number) {
+    let r = Math.floor(Math.random() * max);
+    if (r == last)
+        r = (r + 1) % max;
+
+    return r;
 }
 
 
@@ -39,6 +43,8 @@ class ImagePreLoader
 
     private _cache: HTMLImageElement[];
 
+    private _index: number;
+
     constructor(urls: string[], stepSize: number)
     {
         this._allUrls = urls;
@@ -48,22 +54,23 @@ class ImagePreLoader
         this._numErrors = 0;
         this._numberQueried = 0;
         this._cache = [];
+        this._index = 0;
 
         this.load();
     }
 
     public GetNext()
     {
+        if (this.shouldLoadMore())
+            this.load();
+
         const alreadyLoaded = this.UrlsPreloaded.length;
         if (alreadyLoaded === 0)
             return null;
 
-        if (this.shouldLoadMore())
-            this.load();
-
-        const index = randInt(alreadyLoaded);
+        this._index = differentRandInt(alreadyLoaded, this._index);
         this._numberQueried++;
-        return this.UrlsPreloaded[index];
+        return this.UrlsPreloaded[this._index];
     }
 
     public async LoadFirst()
@@ -138,7 +145,7 @@ export class DualImageLoader
 
     public async LoadFirstImage() {
         return this.getAllImageIds().then(data => {
-            data = data.reverse(); // put latest images first
+            //data = data.reverse(); // put latest images first
             const highResUrls = data.map(imgData => this.getUrl(imgData.bildname, Resolution.High));
             //const lowResUrls = data.map(imgData => this.getUrl(imgData.bildname, Resolution.Low));
 
@@ -167,7 +174,6 @@ export class DualImageLoader
 
     private getAllImageIds()
     {
-        console.log("requesting pics", DualImageLoader._idAPI);
         return http<ImageData[]>(DualImageLoader._idAPI);
     }
 

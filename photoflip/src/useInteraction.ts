@@ -7,18 +7,22 @@ import React, { useEffect, useState } from 'react';
  */
 export const useInteraction = (): boolean =>
 {
+    const delay: number = 300;
     const [isClicking, setIsClicking] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
+    const clickCancellationToken: React.MutableRefObject<ReturnType<typeof setTimeout> | undefined> = React.useRef(undefined);
     const scrollCancellationToken: React.MutableRefObject<ReturnType<typeof setTimeout> | undefined> = React.useRef(undefined);
 
     // update state to reflect the user holding click
     useEffect(() => {
         const click = (e: any) => {
           setIsClicking(true);
+          clearTimeout(clickCancellationToken.current);
         }
 
         const unclick = (e: any) => {
-          setIsClicking(false);
+          clickCancellationToken.current = setTimeout(() => setIsClicking(false), delay);
+          //setIsClicking(false);
         }
 
         window.removeEventListener('mousedown', click);
@@ -45,7 +49,7 @@ export const useInteraction = (): boolean =>
               return;
             setIsScrolling(true);
             clearTimeout(scrollCancellationToken.current);
-            scrollCancellationToken.current = setTimeout(() => setIsScrolling(false), 250);
+            scrollCancellationToken.current = setTimeout(() => setIsScrolling(false), delay);
         }
         window.removeEventListener('wheel', tick);
         window.addEventListener('wheel', tick, { passive: true });

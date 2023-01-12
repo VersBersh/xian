@@ -15,7 +15,9 @@ function PhotoFlipper()
     if (imageLoader.current === null)
     {
         imageLoader.current = new DualImageLoader();
-        imageLoader.current.LoadFirstImage().then(setImgSrc);
+        imageLoader.current.LoadFirstImage().then(setImgSrc).catch(
+            () => setImgSrc(imageLoader.current!.GetNextHighRes())
+        );
     }
 
     useEffect(() =>
@@ -29,11 +31,11 @@ function PhotoFlipper()
         }
 
         setTimeout(() => {
-        const next = imageLoader.current!.GetNextLowRes();
-        if (next === null) return;
-        setImgSrc(next);
-        setCount(count + 1); // force one more re-render (ending on a high res photo)
-        }, 25);
+            const next = imageLoader.current!.GetNextLowRes();
+            if (next === null) return;
+            setImgSrc(next);
+            setCount(count + 1); // force one more re-render (ending on a high res photo)
+        }, 50);
 
     }, [isInteracting, count]);
 
