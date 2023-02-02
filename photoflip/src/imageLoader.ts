@@ -1,8 +1,7 @@
 interface ImageData {
     id: string,
     bildname: string,
-    datum: string,
-    text: string,
+    position: string
 }
 
 const http = async <T>(request: RequestInfo): Promise<T> => {
@@ -117,14 +116,9 @@ class ImagePreLoader
  */
 export class DualImageLoader
 {
-    // This Endpont should return a json object containing a property
-    // "ImageId", which is an array of ids that enumerate all
-    // available images
     private static readonly _idAPI = "/randydiary/api/pictures";
 
-    // This endpoint should return an image with the given id from the
-    // previous endpoint. i.e. /api/image/highRes?id=<someId>
-    private static readonly _highResAPI = "/randydiary/pics"
+    private static readonly _highResAPI = "/folio/pics"
 
     // As above but those same Ids return the same picture in a lower
     // resolution for faster loading.
