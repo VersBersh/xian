@@ -40,7 +40,7 @@ function PhotoFlipper()
     }, [isInteracting, count]);
 
     return (
-        <header className="image-container">
+        <header id="flipper" className="image-container">
             {imgSrc !== null && <img src={imgSrc!} alt="photoKnife" style={imgStyle} />}
         </header>
     );

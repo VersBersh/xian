@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PhotoFlipper from './photoFlipper';
 import { useIsMobile } from './useIsMobile';
 import './App.css';
@@ -6,6 +6,22 @@ import './App.css';
 function App()
 {
   const isMobile = useIsMobile();
+
+  // prevent the context menu appearing on long click
+  useMemo(() => {
+    window.oncontextmenu = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const elem = document.getElementById("flipper");
+      const md = new Event('mousedown');
+      if (elem !== null)
+        elem.dispatchEvent(md);
+      const mu = new Event('mouseup');
+      if (elem !== null)
+        elem.dispatchEvent(mu);
+      return false;
+    }
+  }, []);
 
   return (
     <div className="App">
