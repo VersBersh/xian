@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
  */
 export const useInteraction = (): boolean =>
 {
-    const delay: number = 300;
+    const delay: number = 800;
     const [isClicking, setIsClicking] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
     const clickCancellationToken: React.MutableRefObject<ReturnType<typeof setTimeout> | undefined> = React.useRef(undefined);
@@ -21,8 +21,8 @@ export const useInteraction = (): boolean =>
         }
 
         const unclick = (e: any) => {
+          clearTimeout(clickCancellationToken.current);
           clickCancellationToken.current = setTimeout(() => setIsClicking(false), delay);
-          //setIsClicking(false);
         }
 
         window.removeEventListener('mousedown', click);

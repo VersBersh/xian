@@ -35,7 +35,7 @@ function PhotoFlipper()
             if (next === null) return;
             setImgSrc(next);
             setCount(count + 1); // force one more re-render (ending on a high res photo)
-        }, 50);
+        }, 25);
 
     }, [isInteracting, count]);
 
