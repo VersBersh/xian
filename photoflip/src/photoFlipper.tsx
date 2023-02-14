@@ -6,50 +6,58 @@ import './App.css';
 
 function PhotoFlipper()
 {
-    const [imgSrc, setImgSrc] = useState<string | null>(null);
+    const [hasLoaded, setHasLoaded] = useState(false);
+    const imgSrc = useRef<string>("");
 
-    const isInteracting = useInteraction();
-    const [count, setCount] = useState(0);
-
-    const imageLoader = useRef<DualImageLoader | null>(null);
-    if (imageLoader.current === null)
-    {
-        imageLoader.current = new DualImageLoader();
-        imageLoader.current.LoadFirstImage().then(setImgSrc).catch(
-            () => setImgSrc(imageLoader.current!.GetNextHighRes())
-        );
-    }
-
+    const imageLoader = useRef<DualImageLoader|null>(null);
     useEffect(() =>
     {
-        if (!isInteracting)
+        imageLoader.current = new DualImageLoader();
+        imageLoader.current
+                   .LoadFirstImage()
+                   .then(src => {
+                        imgSrc.current = src;
+                        setHasLoaded(true);
+                    })
+                   .catch(console.warn);
+    }, []);
+
+    const isInteracting = useInteraction();
+    const isInteractingRef = useRef(isInteracting);
+    isInteractingRef.current = isInteracting;
+
+    const flip = () => {
+        const img = document.querySelector('#main-img') as HTMLImageElement;
+        if (!img)
+            return;
+
+        if (!isInteractingRef.current)
         {
             const next = imageLoader.current!.GetNextHighRes();
             if (next === null) return;
-            setImgSrc(next);
+            img.src = next;
             return;
         }
 
         setTimeout(() => {
             const next = imageLoader.current!.GetNextLowRes();
             if (next === null) return;
-            setImgSrc(next);
-            setCount(count + 1); // force one more re-render (ending on a high res photo)
+            img.src = next;
+            window.requestAnimationFrame(flip);
         }, 25);
+    }
 
-    }, [isInteracting, count]);
+    useEffect(() =>
+    {
+        if (isInteracting)
+            window.requestAnimationFrame(flip);
+    }, [isInteracting]);
 
     return (
         <header id="flipper" className="image-container">
-            {imgSrc !== null && <img src={imgSrc!} alt="photoKnife" style={imgStyle} />}
+            {hasLoaded && <img src={imgSrc.current} id="main-img" alt="photoKnife" />}
         </header>
     );
 }
-
-const imgStyle = {
-    maxWidth: "90%",
-    maxHeight: "85vh",
-    margin: "0 10%",
-};
 
 export default PhotoFlipper;

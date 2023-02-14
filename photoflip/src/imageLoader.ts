@@ -10,6 +10,18 @@ const http = async <T>(request: RequestInfo): Promise<T> => {
     return body;
 };
 
+/**
+ * Shuffle an array but keep the first element in place
+ */
+function shuffleArray(array: any[]) {
+    for (var i = array.length - 1; i > 1; --i) {
+        var j = 1 + Math.floor(Math.random() * i);
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
 
 /**
  *  Take an array of image urls and preload them into the browser in
@@ -105,12 +117,13 @@ export class DualImageLoader
     private static readonly _highResIdAPI = "/randydiary/api/pictures";
     private static readonly _lowResIdAPI = "/randydiary/api/lowRes/pictures";
 
-    //private static readonly _highResAPI = "/folio/pics"
-    private static readonly _highResAPI = "https://c-hasselbusch.de/folio/pics"
+    private static readonly _highResAPI = "/folio/pics"
+    //private static readonly _highResAPI = "https://c-hasselbusch.de/folio/pics"
 
     // As above but those same Ids return the same picture in a lower
     // resolution for faster loading.
-    private static readonly _lowResAPI = "https://c-hasselbusch.de/folio/lowRes";
+    private static readonly _lowResAPI = "/folio/lowRes";
+    //private static readonly _lowResAPI = "https://c-hasselbusch.de/folio/lowRes";
 
     private _highResCache: ImagePreLoader | null;
     private _lowResCache: ImagePreLoader | null;
@@ -130,6 +143,7 @@ export class DualImageLoader
 
         return this.getHighResImageIds().then(data => {
             const highResUrls = data.map(imgData => DualImageLoader._highResAPI + "/" + imgData.bildname);
+            shuffleArray(highResUrls);
             this._highResCache = new ImagePreLoader(highResUrls, 10);
             return this._highResCache.LoadFirst();
         });
