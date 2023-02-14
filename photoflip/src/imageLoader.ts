@@ -10,20 +10,6 @@ const http = async <T>(request: RequestInfo): Promise<T> => {
     return body;
 };
 
-enum Resolution
-{
-    High,
-    Low,
-}
-
-function differentRandInt(max: number, last: number) {
-    let r = Math.floor(Math.random() * max);
-    if (r == last)
-        r = (r + 1) % max;
-
-    return r;
-}
-
 
 /**
  *  Take an array of image urls and preload them into the browser in
@@ -67,7 +53,7 @@ class ImagePreLoader
         if (alreadyLoaded === 0)
             return null;
 
-        this._index = differentRandInt(alreadyLoaded, this._index);
+        this._index = (this._index + 1) % alreadyLoaded;
         this._numberQueried++;
         return this.UrlsPreloaded[this._index];
     }
@@ -116,66 +102,60 @@ class ImagePreLoader
  */
 export class DualImageLoader
 {
-    private static readonly _idAPI = "/randydiary/api/pictures";
+    private static readonly _highResIdAPI = "/randydiary/api/pictures";
+    private static readonly _lowResIdAPI = "/randydiary/api/lowRes/pictures";
 
-    private static readonly _highResAPI = "/folio/pics"
+    //private static readonly _highResAPI = "/folio/pics"
+    private static readonly _highResAPI = "https://c-hasselbusch.de/folio/pics"
 
     // As above but those same Ids return the same picture in a lower
     // resolution for faster loading.
-    private static readonly _lowResAPI = ""; // TODO: maybe not necessary
+    private static readonly _lowResAPI = "https://c-hasselbusch.de/folio/lowRes";
 
-    private _allImageIds: ImageData[] | null;
     private _highResCache: ImagePreLoader | null;
     private _lowResCache: ImagePreLoader | null;
 
     constructor()
     {
-        this._allImageIds = null;
         this._highResCache = null;
         this._lowResCache = null;
     }
 
-    public IsLoading() { return this._allImageIds === null; }
+    public async LoadFirstImage()
+    {
+        this.getLowResImageIds().then(data => {
+            const lowResUrls = data.map(imgData => DualImageLoader._lowResAPI + "/" + imgData.bildname);
+            this._lowResCache = new ImagePreLoader(lowResUrls, 25);
+        });
 
-    public async LoadFirstImage() {
-        return this.getAllImageIds().then(data => {
-            //data = data.reverse(); // put latest images first
-            const highResUrls = data.map(imgData => this.getUrl(imgData.bildname, Resolution.High));
-            //const lowResUrls = data.map(imgData => this.getUrl(imgData.bildname, Resolution.Low));
-
+        return this.getHighResImageIds().then(data => {
+            const highResUrls = data.map(imgData => DualImageLoader._highResAPI + "/" + imgData.bildname);
             this._highResCache = new ImagePreLoader(highResUrls, 10);
-            //this._lowResCache = new ImagePreLoader(lowResUrls, 25);
-            this._allImageIds = data;
             return this._highResCache.LoadFirst();
         });
     }
 
-    public GetNextHighRes() {
+    public GetNextHighRes()
+    {
         if (this._highResCache === null)
             return null;
         return this._highResCache.GetNext();
     }
 
-    public GetNextLowRes() {
-
-        // TEMP: no low res endpoint
-        return this.GetNextHighRes();
-
-        // if (this._lowResCache === null)
-        //     return null;
-        // return this._lowResCache.GetNext();
+    public GetNextLowRes()
+    {
+        if (this._lowResCache === null)
+            return null;
+        return this._lowResCache.GetNext();
     }
 
-    private getAllImageIds()
+    private getHighResImageIds()
     {
-        return http<ImageData[]>(DualImageLoader._idAPI);
+        return http<ImageData[]>(DualImageLoader._highResIdAPI);
     }
 
-    private getUrl(picutreName: string, res: Resolution)
+    private getLowResImageIds()
     {
-        const url = res === Resolution.High
-            ? DualImageLoader._highResAPI
-            : DualImageLoader._lowResAPI;
-        return url + "/" + picutreName;
+        return http<ImageData[]>(DualImageLoader._lowResIdAPI);
     }
 }
