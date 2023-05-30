@@ -114,8 +114,8 @@ class ImagePreLoader
  */
 export class DualImageLoader
 {
-    private static readonly _highResIdAPI = "/randydiary/api/pictures";
-    private static readonly _lowResIdAPI = "/randydiary/api/lowRes/pictures";
+    private static readonly _highResIdAPI = "/randydiary/api/pictures.php";
+    private static readonly _lowResIdAPI = "/randydiary/api/lowRes/pictures.php";
 
     private static readonly _highResAPI = "/folio/pics"
     //private static readonly _highResAPI = "https://c-hasselbusch.de/folio/pics"
