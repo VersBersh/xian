@@ -25,15 +25,12 @@ function App()
 
   return (
     <div className="App">
-      <a href="https://c-hasselbusch.de/">
-        <div style={isMobile ? titleStyleMobile : titleStyle}>
-            <p style={{ margin: "0 0 0 0.1em"}}> — CHRISTIAN H. </p>
-            <p style={{ margin: "0 0 0 0.5em"}}>HASSELBUSCH </p>
-        </div>
-      </a>
+      <div style={isMobile ? titleStyleMobile : titleStyle}>
+          <p style={{ margin: "0 0 0 0.1em"}}> — CHRISTIAN H. </p>
+          <p style={{ margin: "0 0 0 0.5em"}}>HASSELBUSCH </p>
+      </div>
       <PhotoFlipper/>
-      <a href="https://c-hasselbusch.de/category/contact/"
-         style={contactStyle}> CONTACT — </a>
+      <div style={contactStyle}> TOUCH ME — </div>
     </div>
   );
 }
@@ -41,6 +38,7 @@ function App()
 
 const titleStyle = {
     fontFamily: "'Helvetica', 'Helvetica Neue'",
+    color: "black",
     textAlign: "left" as const,
     fontSize: "min(100pt, 12vw)",
     position: "fixed" as const,
