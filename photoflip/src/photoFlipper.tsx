@@ -54,7 +54,7 @@ function PhotoFlipper()
     }, [isInteracting]);
 
     return (
-        <header id="flipper" className="image-container" title="scroll to shuffle">
+        <header id="flipper" className="image-container">
             {hasLoaded && <img src={imgSrc.current} id="main-img" alt="photoKnife" />}
         </header>
     );

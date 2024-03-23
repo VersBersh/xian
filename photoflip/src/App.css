@@ -20,6 +20,7 @@
   font-size: calc(10px + 2vmin);
   color: white;
   overflow: hidden;
+  cursor: url('https://c-hasselbusch.de/folio/shuffleBl.png'), auto;
 }
 
 #main-img {
