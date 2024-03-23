@@ -20,13 +20,13 @@
   font-size: calc(10px + 2vmin);
   color: white;
   overflow: hidden;
-  cursor: url('https://c-hasselbusch.de/folio/shuffleBl.png'), auto;
 }
 
 #main-img {
   max-width: 90%;
   max-height: 85vh;
   margin: 0 10%;
+  cursor: url('https://c-hasselbusch.de/folio/shuffleRedBlack.png'), auto;
 }
 
 a:link {text-decoration: none; color: black}
